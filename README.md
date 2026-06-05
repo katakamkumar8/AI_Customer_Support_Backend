@@ -53,7 +53,6 @@ JSON Response
 ## 📁 Folder Structure
 
 ```
-backend/
 ├── app/
 │   ├── api/                   # FastAPI routers
 │   │   ├── chat.py            # POST /chat
@@ -114,7 +113,7 @@ backend/
 
 ```bash
 git clone <repo>
-cd backend
+cd ai_customer_support_backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
