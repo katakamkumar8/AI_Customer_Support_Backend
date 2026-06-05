@@ -11,16 +11,6 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Optional
 
-from pymilvus import (
-    Collection,
-    CollectionSchema,
-    DataType,
-    FieldSchema,
-    MilvusClient,
-    connections,
-    utility,
-)
-
 from app.config import get_settings
 from app.rag.embeddings import get_embedding_service
 
@@ -51,6 +41,9 @@ class VectorStore:
     """Thin wrapper around the Milvus Python SDK for Zilliz Cloud."""
 
     def __init__(self) -> None:
+        from pymilvus import Collection, CollectionSchema, DataType, FieldSchema, connections, utility
+
+        self._pymilvus = (Collection, CollectionSchema, DataType, FieldSchema, connections, utility)
         connections.connect(
             alias="default",
             uri=settings.zilliz_uri,
@@ -61,7 +54,8 @@ class VectorStore:
 
     # ── Private helpers ───────────────────────────────────────────────────────
 
-    def _get_or_create_collection(self) -> Collection:
+    def _get_or_create_collection(self):
+        Collection, CollectionSchema, DataType, FieldSchema, connections, utility = self._pymilvus
         if utility.has_collection(_COLLECTION):
             col = Collection(_COLLECTION)
             col.load()

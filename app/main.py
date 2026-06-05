@@ -3,6 +3,7 @@ app/main.py
 FastAPI application factory with middleware, exception handlers, and lifespan.
 """
 
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -29,8 +30,11 @@ async def lifespan(app: FastAPI):
     logger.info("Starting AI Customer Support Agent", env=settings.app_env)
 
     logger.info("Initialising PostgreSQL schema …")
-    await init_db()
-    logger.info("PostgreSQL ready ✓")
+    try:
+        await asyncio.wait_for(init_db(), timeout=30.0)
+        logger.info("PostgreSQL ready ✓")
+    except Exception as exc:
+        logger.error("PostgreSQL init failed – starting without DB", error=str(exc))
 
     logger.info("Application startup complete ✓")
     yield

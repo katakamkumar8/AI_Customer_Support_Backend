@@ -6,7 +6,12 @@ Orchestrates the PDF → chunks → embeddings → Zilliz pipeline.
 from __future__ import annotations
 
 from app.rag.chunker import extract_text_from_pdf, chunk_text
-from app.rag.vector_store import get_vector_store
+
+
+def _get_store():
+    from app.rag.vector_store import get_vector_store
+
+    return get_vector_store()
 
 
 async def ingest_pdf(file_bytes: bytes, filename: str) -> int:
@@ -25,7 +30,7 @@ async def ingest_pdf(file_bytes: bytes, filename: str) -> int:
     if not chunks:
         raise ValueError(f"Chunking produced zero chunks for {filename}")
 
-    store = get_vector_store()
+    store = _get_store()
     texts = [c.content for c in chunks]
     sources = [c.source for c in chunks]
     stored = store.upsert_chunks(texts, sources)
@@ -33,10 +38,10 @@ async def ingest_pdf(file_bytes: bytes, filename: str) -> int:
 
 
 async def delete_document(filename: str) -> None:
-    store = get_vector_store()
+    store = _get_store()
     store.delete_by_source(filename)
 
 
 async def search_knowledge_base(query: str, top_k: int = 5):
-    store = get_vector_store()
+    store = _get_store()
     return store.similarity_search(query, top_k=top_k)

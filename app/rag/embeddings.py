@@ -5,8 +5,6 @@ Singleton embedding service using sentence-transformers.
 
 from functools import lru_cache
 
-from sentence_transformers import SentenceTransformer
-
 from app.config import get_settings
 
 settings = get_settings()
@@ -16,6 +14,8 @@ class EmbeddingService:
     """Wraps SentenceTransformer and exposes encode helpers."""
 
     def __init__(self) -> None:
+        from sentence_transformers import SentenceTransformer
+
         self._model = SentenceTransformer(settings.embedding_model)
 
     def embed_text(self, text: str) -> list[float]:

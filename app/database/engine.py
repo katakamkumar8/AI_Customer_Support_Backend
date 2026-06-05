@@ -3,6 +3,8 @@ app/database/engine.py
 Async SQLAlchemy engine + session factory.
 """
 
+import ssl
+
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
@@ -10,7 +12,7 @@ from app.config import get_settings
 
 settings = get_settings()
 
-_connect_args = {"ssl": "require"} if settings.postgres_ssl else {}
+_connect_args = {"ssl": ssl.create_default_context()} if settings.postgres_ssl else {}
 
 engine = create_async_engine(
     settings.postgres_dsn,
